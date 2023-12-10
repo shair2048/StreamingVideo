@@ -1,5 +1,6 @@
 package com.basicproject.streamingvideo.auth;
 
+import com.basicproject.streamingvideo.client.ClientController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,6 +42,16 @@ public class AuthController {
         if (!txtUsername.equals("") && !txtPassword.equals("")) {
             String username = txtUsername.getText().trim();
 //            System.out.printf(username);
+            FXMLLoader fxmlLoader = new FXMLLoader(AuthApplication.class.getResource("/com/basicproject/streamingvideo/client.fxml"));
+            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(fxmlLoader.load());
+
+//            Truyen username sang ClientController
+            ClientController clientController = fxmlLoader.getController();
+            clientController.setLoggedInUsername(username);
+
+            stage.setScene(scene);
+            stage.show();
         } else {
             lbNotification.setText("Username or Password is empty!");
         }
