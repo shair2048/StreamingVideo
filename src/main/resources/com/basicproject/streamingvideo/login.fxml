@@ -10,9 +10,10 @@
    <children>
       <Label layoutX="131.0" layoutY="84.0" text="Username" />
       <Label layoutX="133.0" layoutY="131.0" text="Password" />
-      <Button layoutX="163.0" layoutY="195.0" mnemonicParsing="false" text="Login" />
-      <PasswordField layoutX="221.0" layoutY="127.0" />
-      <TextField layoutX="221.0" layoutY="80.0" />
+      <Button fx:id="btnLogin" layoutX="163.0" layoutY="195.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+      <PasswordField fx:id="txtPassword" layoutX="221.0" layoutY="127.0" />
+      <TextField fx:id="txtUsername" layoutX="221.0" layoutY="80.0" />
       <Button layoutX="239.0" layoutY="195.0" mnemonicParsing="false" onAction="#switchToRegister" text="Create Account" />
+      <Label fx:id="lbNotification" layoutX="236.0" layoutY="166.0" />
    </children>
 </AnchorPane>

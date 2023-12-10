@@ -12,10 +12,9 @@
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.basicproject.streamingvideo.client.ClientController">
    <right>
-      <TextArea prefHeight="400.0" prefWidth="315.0" BorderPane.alignment="CENTER">
+      <TextArea fx:id="taMessages" prefHeight="400.0" prefWidth="315.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets right="10.0" />
          </BorderPane.margin>
@@ -31,12 +30,12 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField prefHeight="25.0" prefWidth="253.0">
+                  <TextField fx:id="txtMessage" prefHeight="25.0" prefWidth="253.0">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" text="Send">
+                  <Button fx:id="btnSend" mnemonicParsing="false" onAction="#handleSendingMessage" text="Send">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
@@ -45,7 +44,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button mnemonicParsing="false" text="Select Video">
+                  <Button fx:id="btnSelectVIdeo" mnemonicParsing="false" onAction="#handleSelectVideo" text="Select Video">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -56,10 +55,10 @@
       </VBox>
    </bottom>
    <center>
-      <MediaView fitHeight="400.0" fitWidth="600.0" BorderPane.alignment="CENTER" />
+      <MediaView fx:id="mediaView" fitHeight="400.0" fitWidth="600.0" BorderPane.alignment="CENTER" />
    </center>
    <top>
-      <Label text="Client Name" BorderPane.alignment="CENTER_RIGHT">
+      <Label fx:id="lbClientName" text="Client Name" BorderPane.alignment="CENTER_RIGHT">
          <BorderPane.margin>
             <Insets right="20.0" />
          </BorderPane.margin>
