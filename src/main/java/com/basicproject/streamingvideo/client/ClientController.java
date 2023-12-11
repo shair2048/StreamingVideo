@@ -3,11 +3,14 @@ package com.basicproject.streamingvideo.client;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,14 +19,21 @@ public class ClientController {
     @FXML
     private TextField txtMessage;
     @FXML
-    private Button btnSend;
+    private Slider timeline;
+    @FXML
+    private Button btnPlay;
     @FXML
     private TextArea taMessages;
     @FXML
     private Label lbClientName;
+    @FXML
+    private MediaView mediaView;
     private InputStream inputStream;
     private OutputStream outputStream;
     private String loggedInUsername;
+    private Media media;
+    private MediaPlayer mediaPlayer;
+    private boolean isPlayed = false;
     BufferedReader reader;
     PrintWriter writer;
     Socket socket;
@@ -63,6 +73,7 @@ public class ClientController {
         }
     }
 
+    @FXML
     public void handleSendingMessage(ActionEvent event) throws IOException {
         String message = txtMessage.getText().trim();
         if (!message.equals("")) {
@@ -81,7 +92,47 @@ public class ClientController {
             e.printStackTrace();
         }
     }
-    public void handleSelectVideo(ActionEvent event) throws IOException {
 
+    @FXML
+    public void handleSelectVideo(ActionEvent event) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Video");
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            String url = selectedFile.toURI().toString();
+
+            media = new Media(url);
+            mediaPlayer = new MediaPlayer(media);
+            mediaView.setMediaPlayer(mediaPlayer);
+
+            mediaPlayer.currentTimeProperty().addListener(((observableValue, oldValue, newValue) -> {
+                timeline.setValue(newValue.toSeconds());
+            }));
+
+            mediaPlayer.setOnReady(() -> {
+                Duration totalDuration = media.getDuration();
+                timeline.setMax(totalDuration.toSeconds());
+            });
+//            mediaPlayer.setAutoPlay(false);
+        }
+    }
+
+    @FXML
+    public void handlePlayVideo(ActionEvent event) throws IOException {
+        if (!isPlayed) {
+            btnPlay.setText("Pause");
+            mediaPlayer.play();
+            isPlayed = true;
+        } else {
+            btnPlay.setText("Play");
+            mediaPlayer.pause();
+            isPlayed = false;
+        }
+    }
+
+    @FXML
+    public void timelinePressed(MouseEvent event) throws IOException {
+        mediaPlayer.seek(Duration.seconds(timeline.getValue()));
     }
 }

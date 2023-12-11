@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class Server {
     private static ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>();
+    private static final int UDP_PORT = 9876;
+    private static final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
