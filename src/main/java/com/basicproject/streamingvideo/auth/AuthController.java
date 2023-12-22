@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 
 public class AuthController {
     public Stage stage;
@@ -20,9 +20,26 @@ public class AuthController {
     @FXML
     private TextField txtPassword;
     @FXML
+    private TextField txtUsernameRegister;
+    @FXML
+    private TextField txtPasswordRegister;
+    @FXML
     private Label lbNotification;
+    private String filePath = "D:\\StreamingVideo\\src\\main\\java\\com\\basicproject\\streamingvideo\\auth\\Account.txt";
 
     public void switchToLogin(ActionEvent event) throws IOException {
+        String usernameRegister = txtUsernameRegister.getText().trim();
+        String passwordRegister = txtPasswordRegister.getText().trim();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true));
+            writer.write(usernameRegister + "," + passwordRegister);
+            writer.newLine();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(AuthApplication.class.getResource("/com/basicproject/streamingvideo/login.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
@@ -39,19 +56,42 @@ public class AuthController {
     }
 
     public void handleLogin(ActionEvent event) throws IOException {
-        if (!txtUsername.equals("") && !txtPassword.equals("")) {
-            String username = txtUsername.getText().trim();
-//            System.out.printf(username);
-            FXMLLoader fxmlLoader = new FXMLLoader(AuthApplication.class.getResource("/com/basicproject/streamingvideo/client.fxml"));
-            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(fxmlLoader.load());
+        String username = txtUsername.getText().trim();
+        String password = txtPassword.getText().trim();
 
-//            Truyen username sang ClientController
-            ClientController clientController = fxmlLoader.getController();
-            clientController.setLoggedInUsername(username);
+        if (!username.equals("") && !password.equals("")) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String line;
 
-            stage.setScene(scene);
-            stage.show();
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 2) {
+                        // Lấy username và password từ mảng parts
+                        String storedUsername = parts[0].trim();
+                        String storedPassword = parts[1].trim();
+
+                        if (username.equals(storedUsername) && password.equals(storedPassword)) {
+//                            System.out.printf(username);
+                            FXMLLoader fxmlLoader = new FXMLLoader(AuthApplication.class.getResource("/com/basicproject/streamingvideo/client.fxml"));
+                            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+                            Scene scene = new Scene(fxmlLoader.load());
+
+//                            Truyen username sang ClientController
+                            ClientController clientController = fxmlLoader.getController();
+                            clientController.setLoggedInUsername(username);
+
+                            stage.setScene(scene);
+                            stage.show();
+                        } else {
+                            lbNotification.setText("Username or Password is incorrect!");
+                        }
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         } else {
             lbNotification.setText("Username or Password is empty!");
         }

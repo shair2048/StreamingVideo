@@ -8,12 +8,12 @@
 
 <AnchorPane prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.basicproject.streamingvideo.auth.AuthController">
    <children>
-      <Button layoutX="212.0" layoutY="244.0" mnemonicParsing="false" onAction="#switchToLogin" text="Register" />
+      <Button fx:id="btnRegister" layoutX="212.0" layoutY="244.0" mnemonicParsing="false" onAction="#switchToLogin" text="Register" />
       <Label layoutX="114.0" layoutY="63.0" text="Username" />
-      <TextField layoutX="237.0" layoutY="59.0" />
+      <TextField fx:id="txtUsernameRegister" layoutX="237.0" layoutY="59.0" />
       <Label layoutX="114.0" layoutY="118.0" text="Password" />
-      <PasswordField layoutX="237.0" layoutY="114.0" />
-      <PasswordField layoutX="237.0" layoutY="164.0" />
+      <PasswordField fx:id="txtPasswordRegister" layoutX="237.0" layoutY="114.0" />
+      <PasswordField fx:id="txtConfirmPasswordRegister" layoutX="237.0" layoutY="164.0" />
       <Label layoutX="114.0" layoutY="168.0" text="Confirm password" />
    </children>
 </AnchorPane>

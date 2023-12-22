@@ -14,6 +14,6 @@
       <PasswordField fx:id="txtPassword" layoutX="221.0" layoutY="127.0" />
       <TextField fx:id="txtUsername" layoutX="221.0" layoutY="80.0" />
       <Button layoutX="239.0" layoutY="195.0" mnemonicParsing="false" onAction="#switchToRegister" text="Create Account" />
-      <Label fx:id="lbNotification" layoutX="236.0" layoutY="166.0" />
+      <Label fx:id="lbNotification" layoutX="159.0" layoutY="165.0" prefHeight="17.0" prefWidth="192.0" />
    </children>
 </AnchorPane>
