@@ -66,17 +66,14 @@ public class AuthController {
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length == 2) {
-                        // Lấy username và password từ mảng parts
                         String storedUsername = parts[0].trim();
                         String storedPassword = parts[1].trim();
 
                         if (username.equals(storedUsername) && password.equals(storedPassword)) {
-//                            System.out.printf(username);
                             FXMLLoader fxmlLoader = new FXMLLoader(AuthApplication.class.getResource("/com/basicproject/streamingvideo/client.fxml"));
                             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
                             Scene scene = new Scene(fxmlLoader.load());
 
-//                            Truyen username sang ClientController
                             ClientController clientController = fxmlLoader.getController();
                             clientController.setLoggedInUsername(username);
 

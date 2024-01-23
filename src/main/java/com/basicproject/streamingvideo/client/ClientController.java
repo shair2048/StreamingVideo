@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +78,8 @@ public class ClientController {
     private static final String OUTPUT_FOLDER = "C:\\Users\\SONHAI\\Videos\\Vdo";
     private Timeline snapshotTimeline;
     private static DatagramSocket udpSocket;
-
+    private byte[] buffer = new byte[62000];
+    private ImageView imageView = new ImageView();
 
 
     public void setLoggedInUsername(String username) {
@@ -107,48 +109,50 @@ public class ClientController {
             });
             thread.start();
 
-            /*Thread udpThread = new Thread(() -> {
-                try {
-                    clientSocket = new DatagramSocket();
-                    while (true) {
-                        byte[] receiveData = new byte[62000];
-                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                        clientSocket.receive(receivePacket);
-
-                        byte[] receivedData = receivePacket.getData();
-
-                        Platform.runLater(() -> {
-                            media = new Media(new ByteArrayInputStream(receivedData).toString());
-                            mediaPlayer = new MediaPlayer(media);
-                            mediaPlayer.setAutoPlay(true);
-                            mediaView.setMediaPlayer(mediaPlayer);
-                        });
-                    }
-
-//                    clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (clientSocket != null && !clientSocket.isClosed()) {
-                        clientSocket.close();
-                    }
-                }
-
-            });
-            udpThread.start();*/
-
             udpSocket = new DatagramSocket();
             serverAddress = InetAddress.getByName("localhost");
 
-//            Thuc hien tren luong JavaFX de hien thi username
+            /*try {
+                udpSocket = new DatagramSocket(SERVER_PORT);
+                serverAddress = InetAddress.getByName("localhost");
+
+                *//*Timeline timeline = getTimeline();
+                timeline.play();*//*
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
             Platform.runLater(() -> {
                 lbClientName.setText(loggedInUsername);
-
             });
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /*private Timeline getTimeline() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+            try {
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                udpSocket.receive(packet);
+
+                byte[] imageData = new byte[packet.getLength()];
+                System.arraycopy(packet.getData(), packet.getOffset(), imageData, 0, packet.getLength());
+
+                updateImageView(imageData);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        return timeline;
+    }*/
+
+    private void updateImageView(byte[] imageData) {
+        Image image = new Image(new ByteArrayInputStream(imageData));
+        imageView.setImage(image);
     }
 
     @FXML
@@ -157,7 +161,6 @@ public class ClientController {
         if (!message.equals("")) {
 //            taMessages.appendText("Me: " + message + "\n");
             sendMessage(loggedInUsername  + ": " + message + "\n");
-//            System.out.println(message);
         }
 
         txtMessage.clear();
@@ -205,24 +208,20 @@ public class ClientController {
 
 
             /*mediaPlayer.setOnPlaying(() -> {
-                // Trích xuất hình ảnh từ frame
                 Image frameImage = mediaView.snapshot(null, null);
 
-                // Lưu hình ảnh vào thư mục
                 saveImage(frameImage, "C:\\Users\\SONHAI\\Videos\\Vdo", "frame" + mediaPlayer.getCurrentTime().toSeconds() + ".png");
             });*/
 
-            /*snapshotTimeline = new Timeline(
+            snapshotTimeline = new Timeline(
                     new KeyFrame(Duration.seconds(0.1), event1 -> {
                         WritableImage frameImage = mediaView.snapshot(null, null);
 
-                        saveImage(frameImage, "C:\\Users\\SONHAI\\Videos\\Vdo", "frame" + mediaPlayer.getCurrentTime().toSeconds() + ".png");
-
-                        *//*try {
+                        try {
                             sendImageToServer(frameImage);
                         } catch (IOException e) {
                             e.printStackTrace();
-                        }*//*
+                        }
                     })
             );
             snapshotTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -230,7 +229,7 @@ public class ClientController {
 
             mediaPlayer.setOnEndOfMedia(() -> {
                 stopCapturing();
-            });*/
+            });
 
             isPlayed = true;
 
@@ -243,7 +242,7 @@ public class ClientController {
                 snapshotTimeline.stop();
             }*/
 
-//            stopCapturing();
+            stopCapturing();
         }
     }
 
@@ -253,15 +252,30 @@ public class ClientController {
         }
     }
 
-    /*private void sendImageToServer(WritableImage image) throws IOException {
+    private void sendImageToServer(WritableImage image) throws IOException {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", byteStream);
 
+//        byte[] imageData = new byte[62000];
         byte[] imageData = byteStream.toByteArray();
-//        System.out.println(imageData.length);
-        DatagramPacket packet = new DatagramPacket(imageData, imageData.length, serverAddress, SERVER_PORT);
-        udpSocket.send(packet);
-    }*/
+
+        int packetSize = 62000;
+
+        int totalPackets = (int) Math.ceil((double) imageData.length / packetSize);
+
+        for (int i = 0; i < totalPackets; i++) {
+            int offset = i * packetSize;
+            int length = Math.min(packetSize, imageData.length - offset);
+
+            byte[] packetData = Arrays.copyOfRange(imageData, offset, offset + length);
+
+            DatagramPacket packet = new DatagramPacket(packetData, length, serverAddress, SERVER_PORT);
+            udpSocket.send(packet);
+        }
+//        System.out.println("Gui thanh cong");
+//        DatagramPacket endPacket = new DatagramPacket(new byte[0], 0, serverAddress, SERVER_PORT);
+//        udpSocket.send(endPacket);
+    }
 
     private void saveImage(Image image, String folderPath, String fileName) {
         File folder = new File(folderPath);
